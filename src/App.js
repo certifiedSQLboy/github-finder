@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from 'react';
-import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import './App.css';
 import Navbar from './components/layout/Navbar'
 import Users from './components/users/Users'
@@ -58,20 +58,6 @@ class App extends Component {
     this.setState({user: res, loading: false});
 
   }
-
-  //Get a single user
-  getUser = async username => {
-
-    this.setState({loading: true});
-    const url = `https://api.github.com/users/${username}
-    ?client_id=${process.env.REACT_APP_CLIEND_ID}
-    &client_secrets=${process.env.REACT_APP_CLIENT_SECRET}`
-
-    const res = await (await fetch(url)).json();
-
-    this.setState({user: res, loading: false});
-
-  }
   
   //Get user repos
   getRepos = async username => {
@@ -110,8 +96,8 @@ class App extends Component {
         <div className="App">
           <Navbar/>
           <div className="container">
-            <Switch>
-              <Route exact path='/' render={props => (
+            <Routes>
+              <Route exact path='/' element={
                 <Fragment>
                   <Alert alert={alert}/>
                   <Search 
@@ -122,20 +108,19 @@ class App extends Component {
                   />
                   <Users users={users} loading={loading}/>
                 </Fragment>
-              )}>
+              }>
               </Route>
-              <Route exact path='/about' component={About}/>
-              <Route exact path="/user/:login" render={props => (
+              <Route exact path='/about' element={<About/>}/>
+              <Route exact path="/user/:login" element={
                 <User 
-                  {...props} 
                   getUser={this.getUser}
                   getRepos={this.getRepos} 
                   user={user} 
                   repos ={repos}
                   loading={loading}
                 />
-              )}/>
-            </Switch>
+              }/>
+            </Routes>
           </div>
         </div>
       </Router>
